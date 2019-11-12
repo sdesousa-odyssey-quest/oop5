@@ -2,6 +2,8 @@
 
 namespace App\Vehicle;
 
+use Exception;
+
 class Car extends Vehicle implements \LightableInterface
 {
     /**
@@ -14,10 +16,19 @@ class Car extends Vehicle implements \LightableInterface
      */
     private $energyLevel;
 
+    /**
+     * @var bool
+     */
+    private $hasParkBrake = true;
+
     const ALLOWED_ENERGIES = [
         'fuel',
         'electric',
     ];
+
+    /**
+     * @param bool $hasParkBrake
+     */
 
     public function __construct(string $color, int $nbSeats, string $energy)
     {
@@ -30,11 +41,24 @@ class Car extends Vehicle implements \LightableInterface
         return $this->energy;
     }
 
+    /**
+     * @return bool
+     */
+    public function isParkBrake(): bool
+    {
+        return $this->hasParkBrake;
+    }
+
     public function setEnergy(string $energy): void
     {
         if (in_array($energy, self::ALLOWED_ENERGIES)) {
             $this->energy = $energy;
         }
+    }
+
+    public function setParkBrake(): void
+    {
+        $this->hasParkBrake = !$this->hasParkBrake;
     }
 
     public function getEnergyLevel(): int
@@ -55,5 +79,13 @@ class Car extends Vehicle implements \LightableInterface
     public function switchOff(): bool
     {
         return false;
+    }
+
+    public function start(): string
+    {
+        if($this->hasParkBrake) {
+            throw new Exception("Frein à main actif");
+        }
+        return "Start !";
     }
 }
